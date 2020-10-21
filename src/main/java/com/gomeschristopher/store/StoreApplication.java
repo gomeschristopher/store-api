@@ -1,13 +1,13 @@
-package com.gomeschristopher.cursomc;
+package com.gomeschristopher.store;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class CursomcApplication {
+public class StoreApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(CursomcApplication.class, args);
+		SpringApplication.run(StoreApplication.class, args);
 	}
 
 }

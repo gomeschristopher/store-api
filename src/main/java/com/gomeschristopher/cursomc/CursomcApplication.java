@@ -1,4 +1,4 @@
-package com.gomeschristopher.mc;
+package com.gomeschristopher.cursomc;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

@@ -1,5 +1,6 @@
 package com.gomeschristopher.store;
 
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,14 +12,23 @@ import com.gomeschristopher.store.domain.Address;
 import com.gomeschristopher.store.domain.Category;
 import com.gomeschristopher.store.domain.City;
 import com.gomeschristopher.store.domain.Client;
+import com.gomeschristopher.store.domain.Payment;
+import com.gomeschristopher.store.domain.PaymentBill;
+import com.gomeschristopher.store.domain.PaymentCard;
 import com.gomeschristopher.store.domain.Product;
+import com.gomeschristopher.store.domain.Purchase;
+import com.gomeschristopher.store.domain.PurchaseItem;
 import com.gomeschristopher.store.domain.State;
 import com.gomeschristopher.store.domain.enums.ClientType;
+import com.gomeschristopher.store.domain.enums.PaymentStatus;
 import com.gomeschristopher.store.repositories.AddressRepository;
 import com.gomeschristopher.store.repositories.CategoryRepository;
 import com.gomeschristopher.store.repositories.CityRepository;
 import com.gomeschristopher.store.repositories.ClientRepository;
+import com.gomeschristopher.store.repositories.PaymentRepository;
 import com.gomeschristopher.store.repositories.ProductRepository;
+import com.gomeschristopher.store.repositories.PurchaseItemRepository;
+import com.gomeschristopher.store.repositories.PurchaseRepository;
 import com.gomeschristopher.store.repositories.StateRepository;
 
 @SpringBootApplication
@@ -41,6 +51,15 @@ public class StoreApplication implements CommandLineRunner {
 	
 	@Autowired
 	private AddressRepository addressRepository;
+	
+	@Autowired
+	private PurchaseRepository purchaseRepository;
+	
+	@Autowired
+	private PaymentRepository paymentRepository;
+	
+	@Autowired
+	private PurchaseItemRepository purchaseItemRepository;
 
 	public static void main(String[] args) {
 		SpringApplication.run(StoreApplication.class, args);
@@ -90,6 +109,34 @@ public class StoreApplication implements CommandLineRunner {
 		clientRepository.saveAll(Arrays.asList(cli1));
 		addressRepository.saveAll(Arrays.asList(address1, address2));
 		
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+		
+		Purchase purchase1 = new Purchase(null, sdf.parse("22/10/2020 10:23"), cli1, address1);
+		Purchase purchase2 = new Purchase(null, sdf.parse("21/09/2020 10:23"), cli1, address2);
+		
+		Payment payment1 = new PaymentCard(null, PaymentStatus.SETTLED, purchase1, 6);
+		purchase1.setPayment(payment1);
+		
+		Payment payment2 = new PaymentBill(null, PaymentStatus.PENDING, purchase2, sdf.parse("22/10/2020 10:23"), sdf.parse("22/10/2020 10:23"));
+		purchase2.setPayment(payment2);
+		
+		cli1.getPurchases().addAll(Arrays.asList(purchase1, purchase2));
+		
+		purchaseRepository.saveAll(Arrays.asList(purchase1, purchase2));
+		paymentRepository.saveAll(Arrays.asList(payment1, payment2));
+		
+		PurchaseItem pi1 = new PurchaseItem(purchase1, p1, 0.00, 1, 2000.00);
+		PurchaseItem pi2 = new PurchaseItem(purchase1, p3, 0.00, 2, 80.00);
+		PurchaseItem pi3 = new PurchaseItem(purchase2, p2, 100.00, 1, 800.00);
+		
+		purchase1.getItems().addAll(Arrays.asList(pi1, pi2));
+		purchase1.getItems().addAll(Arrays.asList(pi1, pi2));
+		
+		p1.getItems().addAll(Arrays.asList(pi1));
+		p2.getItems().addAll(Arrays.asList(pi3));
+		p3.getItems().addAll(Arrays.asList(pi2));
+		
+		purchaseItemRepository.saveAll(Arrays.asList(pi1, pi2, pi3));
 	}
 	
 	

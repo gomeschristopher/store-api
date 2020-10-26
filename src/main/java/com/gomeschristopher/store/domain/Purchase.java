@@ -53,6 +53,14 @@ public class Purchase implements Serializable {
 		this.client = client;
 		this.deliveryAddress = deliveryAddress;
 	}
+	
+	public double getTotalValue() {
+		double sum = 0.0;
+		for (PurchaseItem pi : items) {
+			sum = sum + pi.getSubtotal();
+		}
+		return sum;
+	}
 
 	public Integer getId() {
 		return id;

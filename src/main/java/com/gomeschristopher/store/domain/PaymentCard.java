@@ -2,9 +2,11 @@ package com.gomeschristopher.store.domain;
 
 import javax.persistence.Entity;
 
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.gomeschristopher.store.domain.enums.PaymentStatus;
 
 @Entity
+@JsonTypeName("cardPayment")
 public class PaymentCard extends Payment{
 	private static final long serialVersionUID = 1L;
 	

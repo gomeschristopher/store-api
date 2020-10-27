@@ -1,0 +1,75 @@
+package com.gomeschristopher.store.security;
+
+import java.util.Collection;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import com.gomeschristopher.store.domain.enums.Profile;
+
+public class UserSS implements UserDetails {
+	private static final long serialVersionUID = 1L;
+	
+	private Integer Id;
+	private String email;
+	private String password;
+	private Collection<? extends GrantedAuthority> authorities;
+	
+	public UserSS() {
+	}
+	
+	public UserSS(Integer id, String email, String password, Set<Profile> profiles) {
+		super();
+		Id = id;
+		this.email = email;
+		this.password = password;
+		this.authorities = profiles.stream().map(x -> new SimpleGrantedAuthority(x.getDescription())).collect(Collectors.toList());
+	}
+
+	public Integer getId() {
+		return Id;
+	}
+	
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		return authorities;
+	}
+
+	@Override
+	public String getPassword() {
+		return password;
+	}
+
+	@Override
+	public String getUsername() {
+		return email;
+	}
+
+	@Override
+	public boolean isAccountNonExpired() {
+		return true;
+	}
+
+	@Override
+	public boolean isAccountNonLocked() {
+		return true;
+	}
+
+	@Override
+	public boolean isCredentialsNonExpired() {
+		return true;
+	}
+
+	@Override
+	public boolean isEnabled() {
+		return true;
+	}
+	
+	public boolean hasRole(Profile profile) {
+		return getAuthorities().contains(new SimpleGrantedAuthority(profile.getDescription()));
+	}
+
+}

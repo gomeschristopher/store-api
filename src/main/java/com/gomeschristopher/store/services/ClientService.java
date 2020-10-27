@@ -16,10 +16,13 @@ import com.gomeschristopher.store.domain.Address;
 import com.gomeschristopher.store.domain.City;
 import com.gomeschristopher.store.domain.Client;
 import com.gomeschristopher.store.domain.enums.ClientType;
+import com.gomeschristopher.store.domain.enums.Profile;
 import com.gomeschristopher.store.dto.ClientDTO;
 import com.gomeschristopher.store.dto.ClientNewDTO;
 import com.gomeschristopher.store.repositories.AddressRepository;
 import com.gomeschristopher.store.repositories.ClientRepository;
+import com.gomeschristopher.store.security.UserSS;
+import com.gomeschristopher.store.services.exceptions.AuthorizationException;
 import com.gomeschristopher.store.services.exceptions.DataIntegrityException;
 import com.gomeschristopher.store.services.exceptions.ObjectNotFoundException;
 
@@ -36,6 +39,12 @@ public class ClientService {
 	private BCryptPasswordEncoder pe;
 	
 	public Client find(Integer id) {
+		
+		UserSS user = UserService.authenticated();
+		if (user==null || !user.hasRole(Profile.ADMIN) && !id.equals(user.getId())) {
+			throw new AuthorizationException("ACCESS_DENIED");
+		}
+		
 		Optional<Client> obj = repo.findById(id);
 		return obj.orElseThrow(() -> new ObjectNotFoundException(
 				 "Objeto não encontrado! Id: " + id + ", Tipo: " + Client.class.getName()));

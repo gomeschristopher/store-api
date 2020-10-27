@@ -21,6 +21,7 @@ import com.gomeschristopher.store.domain.PurchaseItem;
 import com.gomeschristopher.store.domain.State;
 import com.gomeschristopher.store.domain.enums.ClientType;
 import com.gomeschristopher.store.domain.enums.PaymentStatus;
+import com.gomeschristopher.store.domain.enums.Profile;
 import com.gomeschristopher.store.repositories.AddressRepository;
 import com.gomeschristopher.store.repositories.CategoryRepository;
 import com.gomeschristopher.store.repositories.CityRepository;
@@ -129,16 +130,21 @@ public class DBService {
 		cityRepository.saveAll(Arrays.asList(c1, c2, c3));
 		
 		Client cli1 = new Client(null, "Maria Silva", "gomeschristopher@hotmail.com", "36378912377", ClientType.NATURAL_PERSON, pe.encode("123"));
+		Client cli2 = new Client(null, "Ana Costa", "christopherbrussgomes@gmail.com", "28192010163", ClientType.NATURAL_PERSON, pe.encode("123"));
+		cli2.addProfile(Profile.ADMIN);
 		
 		cli1.getPhones().addAll(Arrays.asList("27363323", "93838393"));
+		cli2.getPhones().addAll(Arrays.asList("273633234", "938383934"));
 		
 		Address e1 = new Address(null, "Rua Flores", "300", "Apto 303", "Jardim", "38220834", cli1, c1);
 		Address e2 = new Address(null, "Avenida Matos", "105", "Sala 800", "Centro", "38777012", cli1, c2);
+		Address e3 = new Address(null, "Av  Goias", "105", "Sala 800", "Centro", "38777012", cli2, c2);
 		
 		cli1.getAddress().addAll(Arrays.asList(e1, e2));
+		cli2.getAddress().addAll(Arrays.asList(e3));
 		
-		clientRepository.saveAll(Arrays.asList(cli1));
-		addressRepository.saveAll(Arrays.asList(e1, e2));
+		clientRepository.saveAll(Arrays.asList(cli1, cli2));
+		addressRepository.saveAll(Arrays.asList(e1, e2, e3));
 	
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 		

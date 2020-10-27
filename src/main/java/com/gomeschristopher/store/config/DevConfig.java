@@ -9,9 +9,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
 import com.gomeschristopher.store.services.DBService;
+import com.gomeschristopher.store.services.EmailService;
+import com.gomeschristopher.store.services.SmtpEmailService;
 
 @Configuration
-@Profile("prod")
+@Profile("dev")
 public class DevConfig {
 	
 	@Autowired
@@ -29,6 +31,11 @@ public class DevConfig {
 		
 		dbService.instantiateTestDatabase();
 		return true;
+	}
+	
+	@Bean
+	public EmailService emailService() {
+		return new SmtpEmailService();
 	}
 	
 }

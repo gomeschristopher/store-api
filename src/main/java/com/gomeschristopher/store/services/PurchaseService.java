@@ -33,6 +33,12 @@ public class PurchaseService {
 	
 	@Autowired
 	private PurchaseItemRepository purchaseItemRepository;
+	
+	@Autowired
+	private ClientService clientService;
+	
+	@Autowired
+	private EmailService emailService;
 
 	public Purchase find(Integer id) {
 		Optional<Purchase> obj = repo.findById(id);
@@ -44,6 +50,7 @@ public class PurchaseService {
 	public Purchase insert(Purchase obj) {
 		obj.setId(null);
 		obj.setInstant(new Date());
+		obj.setClient(clientService.find(obj.getClient().getId()));
 		obj.getPayment().setStatus(PaymentStatus.PENDING);
 		obj.getPayment().setPurchase(obj);
 		if(obj.getPayment() instanceof PaymentBill) {
@@ -54,10 +61,12 @@ public class PurchaseService {
 		paymentRepository.save(obj.getPayment());
 		for (PurchaseItem ip : obj.getItems()) {
 			ip.setDescount(0.0);
-			ip.setPrice(productService.find(ip.getProduct().getId()).getPrice());
+			ip.setProduct(productService.find(ip.getProduct().getId()));
+			ip.setPrice(ip.getProduct().getPrice());
 			ip.setPurchase(obj);
 		}
 		purchaseItemRepository.saveAll(obj.getItems());
+		emailService.sendOrderConfirmationHtmlEmail(obj);
 		return obj;
 		
 	}

@@ -9,6 +9,6 @@ import com.gomeschristopher.store.domain.Client;
 @Repository
 public interface ClientRepository extends JpaRepository<Client, Integer> {
 
-	@Transactional
+	@Transactional(readOnly=true)
 	Client findByEmail(String email);
 }

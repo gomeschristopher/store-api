@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.gomeschristopher.store.domain.Client;
@@ -36,6 +37,12 @@ public class ClientResource {
 		return ResponseEntity.ok().body(obj); 
 	}
 	
+	@RequestMapping(value="/email", method=RequestMethod.GET)
+	public ResponseEntity<Client> find(@RequestParam(value="value") String email) {
+		Client obj = service.findByEmail(email);
+		return ResponseEntity.ok().body(obj);
+	}
+	
 	@RequestMapping(method=RequestMethod.POST)
 	public ResponseEntity<Void> insert(@Valid @RequestBody ClientNewDTO objDto) {
 		Client obj = service.fromDTO(objDto);
@@ -51,6 +58,8 @@ public class ClientResource {
 		obj = service.update(obj);
 		return ResponseEntity.noContent().build();
 	}
+	
+	
 	
 	@PreAuthorize("hasAnyRole('ADMIN')")
 	@RequestMapping(value= "/{id}", method=RequestMethod.DELETE)
@@ -77,6 +86,12 @@ public class ClientResource {
 		Page<Client> list = service.findPage(page, linesPerPage, orderBy, direction);
 		Page<ClientDTO> listDto = list.map(obj -> new ClientDTO(obj));
 		return ResponseEntity.ok().body(listDto); 
+	}
+	
+	@RequestMapping(value="/picture", method=RequestMethod.POST)
+	public ResponseEntity<Void> uploadProfileFile(@RequestParam(name="file") MultipartFile file) {
+		URI uri = service.uploadProfilePicture(file);
+		return ResponseEntity.created(uri).build();
 	}
 	
 }

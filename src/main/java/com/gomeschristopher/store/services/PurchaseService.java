@@ -4,9 +4,13 @@ import java.util.Date;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.gomeschristopher.store.domain.Client;
 import com.gomeschristopher.store.domain.PaymentBill;
 import com.gomeschristopher.store.domain.Purchase;
 import com.gomeschristopher.store.domain.PurchaseItem;
@@ -14,6 +18,8 @@ import com.gomeschristopher.store.domain.enums.PaymentStatus;
 import com.gomeschristopher.store.repositories.PaymentRepository;
 import com.gomeschristopher.store.repositories.PurchaseItemRepository;
 import com.gomeschristopher.store.repositories.PurchaseRepository;
+import com.gomeschristopher.store.security.UserSS;
+import com.gomeschristopher.store.services.exceptions.AuthorizationException;
 import com.gomeschristopher.store.services.exceptions.ObjectNotFoundException;
 
 @Service
@@ -69,6 +75,16 @@ public class PurchaseService {
 		emailService.sendOrderConfirmationHtmlEmail(obj);
 		return obj;
 		
+	}
+	
+	public Page<Purchase> findPage(Integer page, Integer linesPerPage, String orderBy, String direction) {
+		UserSS user = UserService.authenticated();
+		if (user == null) {
+			throw new AuthorizationException("ACCESS_DENIED");
+		}
+		PageRequest pageRequest = PageRequest.of(page, linesPerPage, Direction.valueOf(direction), orderBy);
+		Client client =  clientService.find(user.getId());
+		return repo.findByClient(client, pageRequest);
 	}
 	
 }
